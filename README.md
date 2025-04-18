@@ -1,5 +1,7 @@
 # S3-to-IPFS Gateway (Local IPFS Node Version)
 
+![Architecture Diagram](https://github.com/user-attachments/assets/a3e4e653-927d-4517-98d0-69ea666daeea)
+
 This project is a simple gateway that allows uploading files using an S3-like POST API and automatically stores those files on the IPFS network using a locally running IPFS node. It also supports manual pinning and periodic background pinning of unpinned files.
 
 ## ✨ Features
