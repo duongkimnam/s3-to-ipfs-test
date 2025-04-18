@@ -48,7 +48,7 @@ npm run dev2
 
 ## API Endpoints
 ### POST /upload
-- Upload a file using form-data with key file
+- Upload a file using `form-data` with key `file`
 - Auto-pins to IPFS if not dupicate
 
 ### GET files/:key
@@ -61,6 +61,34 @@ npm run dev2
 - Manuanally pin a CID using the local IPFS node (if you like :v)
 
 ## Cron Job
-- Every 5 minutes, the system checks MongoDB for any files not yet pinned and pins them using`ipfs pin add`
+- Every 5 minutes, the system checks MongoDB for any files not yet pinned and pins them using `ipfs pin add`
+
+## Thought Process & Approach
+
+### 1. Initial POC `server.js`
+I began with a basic Express server that could map a file key to its corresponding IPFS CID using a local JSON file. The idea was to simulate a lightweight static gateway: upload elsewhere, manually update a `mappings.json` file, and then redirect access requests to the IPFS public gateway. This helped quickly validate the core idea of routing files stored in IPFS using simple keys.
+
+### 2. Improvements 
+As I started testing this basic setup, I quickly realized its limitations. 
+There was no upload capability, no automatic CID tracking, and no database — all mappings were hardcoded in a fragile JSON file. There was also no way to ensure CIDs stayed available on the IPFS node without pinning.
+
+### 3. Expansion `index2.js`
+From there, I incrementally built out the system:
+- First, I added file upload support with `multer` and used SHA256 hashes for deduplication.
+- I replaced the static mapping with MongoDB, which allowed more scalable storage and metadata tracking.
+- I added IPFS pinning to ensure files wouldn't be garbage collected.
+- A background cron job was introduced to retry pinning in case it failed during upload.
+- Manual pinning and listing endpoints were added for admin/debug convenience.
+
+### 4. Future Vision (Production-grade)
+
+To bring this project closer to production, I would:
+
+- Replace IPFS CLI with programmatic API (using `ipfs-http-client` or `js-ipfs`)
+- Add authentication (JWT, API keys)
+- Store files permanently using IPFS Cluster or hybrid (IPFS + Filecoin)
+- Add unit tests and health-check endpoints
+- Add object versioning (like S3’s `VersionId`)
+- Integrate rate-limiting and logging for ops
 
 
